@@ -4,12 +4,13 @@ import tempfile
 from importlib.metadata import version
 from pathlib import Path
 from typing import Dict, List, Optional, Union, cast
-
+#########################################
 import srsly
 import torch
 from colpali_engine.models import ColPali, ColPaliProcessor, ColQwen2, ColQwen2Processor
 from pdf2image import convert_from_path
 from PIL import Image
+import time
 
 from byaldi.objects import Result
 
