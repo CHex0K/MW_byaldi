@@ -160,7 +160,7 @@ class RAGMultiModalModel:
         query: Union[str, List[str]],
         k: int = 10,
         filter_metadata: Optional[Dict[str,str]] = None,
-        ignore_ids: Optional[List[str]] = [],
+        ignore_ids: Optional[List[int]] = [],
         return_base64_results: Optional[bool] = None,
     ) -> Union[List[Result], List[List[Result]]]:
         """Query an index.

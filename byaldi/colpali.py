@@ -605,7 +605,7 @@ class ColPaliModel:
                         
         if not filter_metadata:
             print('bbbbbbbbbooooooooom')
-            req_embedding_ids = [eid for eid,doc in self.embed_id_to_doc_id.items() if doc['doc_id'] not in ignore_ids]
+            req_embedding_ids = [eid for eid,doc in self.embed_id_to_doc_id.items() if (doc['doc_id'] not in ignore_ids)]
         else:
             print('no bbbbbbbbbooooooooom')
             req_embedding_ids = [eid for eid,doc in self.embed_id_to_doc_id.items() if doc['doc_id'] in req_doc_ids]
@@ -619,7 +619,7 @@ class ColPaliModel:
         query: Union[str, List[str]],
         k: int = 10,
         filter_metadata: Optional[Dict[str,str]] = None,
-        ignore_ids: Optional[List[str]] = [],
+        ignore_ids: Optional[List[int]] = [],
         return_base64_results: Optional[bool] = None,
     ) -> Union[List[Result], List[List[Result]]]:
         # Set default value for return_base64_results if not provided
