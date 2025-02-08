@@ -594,7 +594,6 @@ class ColPaliModel:
         raise NotImplementedError("This method is not implemented yet.")
 
     def filter_embeddings(self, ignore_ids, filter_metadata:Dict[str,str]):
-        print('GOOOOOOO')
         req_doc_ids = []
         for idx,metadata_dict in self.doc_id_to_metadata.items():
             if idx in ignore_ids: continue
@@ -604,14 +603,12 @@ class ColPaliModel:
                         req_doc_ids.append(idx)
                         
         if not filter_metadata:
-            print('bbbbbbbbbooooooooom')
             req_embedding_ids = [eid for eid,doc in self.embed_id_to_doc_id.items() if (doc['doc_id'] not in ignore_ids)]
         else:
-            print('no bbbbbbbbbooooooooom')
             req_embedding_ids = [eid for eid,doc in self.embed_id_to_doc_id.items() if doc['doc_id'] in req_doc_ids]
 
         req_embeddings = [ie for idx,ie in enumerate(self.indexed_embeddings) if idx in req_embedding_ids]
-        print(req_embeddings, req_embedding_ids)
+
         return req_embeddings, req_embedding_ids
     
     def search(
@@ -645,10 +642,8 @@ class ColPaliModel:
                 embeddings_query = self.model(**batch_query)
             qs = list(torch.unbind(embeddings_query.to("cpu")))
             if (not filter_metadata) and (not ignore_ids):
-                print('1')
                 req_embeddings = self.indexed_embeddings
             else:
-                print('2')
                 req_embeddings, req_embedding_ids = self.filter_embeddings(ignore_ids = ignore_ids, filter_metadata=filter_metadata) 
             # Compute scores
             scores = self.processor.score(qs,req_embeddings).cpu().numpy()
