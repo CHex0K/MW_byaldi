@@ -659,7 +659,7 @@ class ColPaliModel:
             # Create Result objects
             query_results = []
             for embed_id in top_pages:
-                if filter_metadata:
+                if filter_metadata or ignore_ids:
                     adjusted_embed_id = req_embedding_ids[embed_id]
                 else:
                     adjusted_embed_id = int(embed_id)
