@@ -595,18 +595,20 @@ class ColPaliModel:
 
     def filter_embeddings(self, ignore_ids, filter_metadata:Dict[str,str]):
         req_doc_ids = []
-        print('GOOOOOO')
         for idx,metadata_dict in self.doc_id_to_metadata.items():
-            print(idx,metadata_dict)
             if idx in ignore_ids: continue
             for metadata_key,metadata_value in metadata_dict.items():
                 if metadata_key in filter_metadata:
                     if filter_metadata[metadata_key] == metadata_value:
                         req_doc_ids.append(idx)
                         
-        req_embedding_ids = [eid for eid,doc in self.embed_id_to_doc_id.items() if doc['doc_id'] in req_doc_ids]
-        req_embeddings = [ie for idx,ie in enumerate(self.indexed_embeddings) if idx in req_embedding_ids]
+        if not filter_metadata:
+            req_embedding_ids = [eid for eid,doc in self.embed_id_to_doc_id.items() if doc['doc_id'] not in ignore_ids]
+        else:
+            req_embedding_ids = [eid for eid,doc in self.embed_id_to_doc_id.items() if doc['doc_id'] in req_doc_ids]
 
+        req_embeddings = [ie for idx,ie in enumerate(self.indexed_embeddings) if idx in req_embedding_ids]
+        print(req_embeddings, req_embedding_ids)
         return req_embeddings, req_embedding_ids
     
     def search(
@@ -639,7 +641,7 @@ class ColPaliModel:
                 batch_query = {k: v.to(self.device).to(self.model.dtype if v.dtype in [torch.float16, torch.bfloat16, torch.float32] else v.dtype) for k, v in batch_query.items()}
                 embeddings_query = self.model(**batch_query)
             qs = list(torch.unbind(embeddings_query.to("cpu")))
-            if not filter_metadata:
+            if (not filter_metadata) and (not ignore_ids):
                 req_embeddings = self.indexed_embeddings
             else:
                 req_embeddings, req_embedding_ids = self.filter_embeddings(ignore_ids = ignore_ids, filter_metadata=filter_metadata) 
