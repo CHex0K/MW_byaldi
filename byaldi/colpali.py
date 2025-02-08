@@ -593,9 +593,12 @@ class ColPaliModel:
     def remove_from_index(self):
         raise NotImplementedError("This method is not implemented yet.")
 
-    def filter_embeddings(self,filter_metadata:Dict[str,str]):
+    def filter_embeddings(self, ignore_ids, filter_metadata:Dict[str,str]):
         req_doc_ids = []
+        print('GOOOOOO')
         for idx,metadata_dict in self.doc_id_to_metadata.items():
+            print(idx,metadata_dict)
+            if idx in ignore_ids: continue
             for metadata_key,metadata_value in metadata_dict.items():
                 if metadata_key in filter_metadata:
                     if filter_metadata[metadata_key] == metadata_value:
@@ -611,6 +614,7 @@ class ColPaliModel:
         query: Union[str, List[str]],
         k: int = 10,
         filter_metadata: Optional[Dict[str,str]] = None,
+        ignore_ids: Optional[List[str]] = [],
         return_base64_results: Optional[bool] = None,
     ) -> Union[List[Result], List[List[Result]]]:
         # Set default value for return_base64_results if not provided
@@ -638,7 +642,7 @@ class ColPaliModel:
             if not filter_metadata:
                 req_embeddings = self.indexed_embeddings
             else:
-                req_embeddings, req_embedding_ids = self.filter_embeddings(filter_metadata=filter_metadata) 
+                req_embeddings, req_embedding_ids = self.filter_embeddings(ignore_ids = ignore_ids, filter_metadata=filter_metadata) 
             # Compute scores
             scores = self.processor.score(qs,req_embeddings).cpu().numpy()
 
